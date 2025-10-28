@@ -1,0 +1,281 @@
+direction: right
+
+classes: {
+  base: {
+    style: {
+      bold: true
+      font-size: 24
+    }
+  }
+  module: {
+    style: {
+      fill: AliceBlue
+      fill-pattern: grain
+      border-radius: 8
+      font: mono
+    }
+  }
+  parser: {
+    style: {
+      fill: Honeydew
+      fill-pattern: dots
+      border-radius: 8
+      font: mono
+    }
+  }
+  io: {
+    shape: cylinder
+    style: { font-size: 22 }
+  }
+  enum: {
+    style: {
+      fill: Lavender
+      font: mono
+    }
+  }
+  struct: {
+    style: {
+      fill: Beige
+      font: mono
+    }
+  }
+  error: {
+    style: {
+      fill: MistyRose
+      font: mono
+    }
+  }
+  feature: {
+    style: {
+      stroke-dash: 4
+    }
+  }
+  fn: {
+    style: {
+      italic: true
+    }
+  }
+}
+
+input: {
+  label: Input File / Reader
+  class: [base; io]
+}
+
+crate: "universal-psm-converter" {
+  direction: right
+  class: module
+
+  lib_api: Public API {
+    class: module
+    detect_path: {
+      label: detect_format_from_path(path)
+      class: [base; fn]
+    }
+    convert_file: {
+      label: convert_file_to_ipsa(input, output_dir)
+      class: [base; fn]
+    }
+    convert_stream: {
+      label: convert_streaming(reader, format, writers)
+      class: [base; fn]
+    }
+    config: {
+      label: ConverterConfig
+      class: [base; struct]
+    }
+  }
+
+  detection: detection {
+    class: module
+    detect: {
+      label: detect_format(path|reader)
+      class: [base; fn]
+    }
+  }
+
+  types: types {
+    class: module
+    sf: {
+      label: SoftwareFormat
+      class: [base; enum]
+    }
+    stats: {
+      label: ConversionStats
+      class: [base; struct]
+    }
+    ident: {
+      label: IdentificationRecord
+      class: [base; struct]
+    }
+    modrec: {
+      label: ModificationRecord
+      class: [base; struct]
+    }
+    pgly_ident: {
+      label: PGlycoIdentificationRecord
+      class: [base; struct]
+    }
+  }
+
+  errors: error {
+    class: module
+    err: {
+      label: ConversionError
+      class: [base; error]
+    }
+  }
+
+  conversion: conversion {
+    class: module
+    convert_file_fn: {
+      label: convert_file_to_ipsa_with_config
+      class: [base; fn]
+    }
+    count_fn: {
+      label: count_actual_output
+      class: [base; fn]
+    }
+  }
+
+  streaming: streaming {
+    class: module
+    convert_stream_cfg: {
+      label: convert_streaming_with_config
+      class: [base; fn]
+    }
+  }
+
+  formats: formats {
+    class: module
+    fragpipe: FragPipe {
+      class: parser
+      f_convert: {
+        label: convert_fragpipe_to_ipsa
+        class: [base; fn]
+      }
+    }
+    byonic: Byonic {
+      class: parser
+      b_convert: {
+        label: convert_to_ipsa
+        class: [base; fn]
+      }
+      inputs: {
+        label: xlsx|csv
+        class: [base]
+      }
+    }
+    glyco_decipher: Glyco-Decipher {
+      class: parser
+      g_convert: {
+        label: convert_to_ipsa
+        class: [base; fn]
+      }
+      inputs: {
+        label: tsv|txt
+        class: [base]
+      }
+    }
+    gpquest: GPQuest {
+      class: parser
+      q_convert: {
+        label: convert_to_ipsa
+        class: [base; fn]
+      }
+      inputs: {
+        label: csv
+        class: [base]
+      }
+    }
+    opair: OPair {
+      class: parser
+      o_convert: {
+        label: convert_to_ipsa
+        class: [base; fn]
+      }
+      inputs: {
+        label: psmtsv
+        class: [base]
+      }
+    }
+    pglyco: pGlyco {
+      class: parser
+      p_convert: {
+        label: convert_to_ipsa
+        class: [base; fn]
+      }
+      inputs: {
+        label: txt
+        class: [base]
+      }
+    }
+  }
+
+  cli: CLI (feature) {
+    class: [module; feature]
+    args: {
+      label: Args (clap)
+      class: [base]
+    }
+    run: {
+      label: run()
+      class: [base; fn]
+    }
+    main: {
+      label: main()
+      class: [base; fn]
+    }
+  }
+}
+
+out_ident: {
+  label: Identifications.csv
+  class: [base; io]
+}
+out_mods: {
+  label: Modifications.csv
+  class: [base; io]
+}
+
+# Data flow
+input -> crate.detection.detect: { label: read headers/extension }
+crate.detection.detect -> crate.types.sf: { label: returns }
+crate.lib_api.detect_path -> crate.detection.detect: { label: delegates }
+
+crate.lib_api.convert_file -> crate.conversion.convert_file_fn: { label: orchestrates }
+crate.conversion.convert_file_fn -> crate.detection.detect: { label: detect }
+crate.conversion.convert_file_fn -> crate.formats.fragpipe.f_convert: { label: FragPipe }
+crate.conversion.convert_file_fn -> crate.formats.byonic.b_convert: { label: Byonic }
+crate.conversion.convert_file_fn -> crate.formats.glyco_decipher.g_convert: { label: Glyco-Decipher }
+crate.conversion.convert_file_fn -> crate.formats.gpquest.q_convert: { label: GPQuest }
+crate.conversion.convert_file_fn -> crate.formats.opair.o_convert: { label: OPair }
+crate.conversion.convert_file_fn -> crate.formats.pglyco.p_convert: { label: pGlyco }
+
+crate.formats.fragpipe.f_convert -> out_ident
+crate.formats.fragpipe.f_convert -> out_mods
+crate.formats.byonic.b_convert -> out_ident
+crate.formats.byonic.b_convert -> out_mods
+crate.formats.glyco_decipher.g_convert -> out_ident
+crate.formats.glyco_decipher.g_convert -> out_mods
+crate.formats.gpquest.q_convert -> out_ident
+crate.formats.gpquest.q_convert -> out_mods
+crate.formats.opair.o_convert -> out_ident
+crate.formats.opair.o_convert -> out_mods
+crate.formats.pglyco.p_convert -> out_ident
+crate.formats.pglyco.p_convert -> out_mods
+
+crate.streaming.convert_stream_cfg -> crate.types.stats: { label: returns }
+crate.streaming.convert_stream_cfg -> out_ident: { label: streaming writers }
+crate.streaming.convert_stream_cfg -> out_mods: { label: streaming writers }
+
+crate.errors.err -> crate.conversion.convert_file_fn: { label: failure paths }
+crate.errors.err -> crate.detection.detect: { label: unsupported format }
+
+crate.cli.run -> crate.lib_api.detect_path: { label: --detect-only }
+crate.cli.run -> crate.lib_api.convert_file: { label: convert path }
+crate.cli.main -> crate.cli.run
+
+# External entry points
+input -> crate.lib_api.detect_path
+input -> crate.lib_api.convert_file
