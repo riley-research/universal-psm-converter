@@ -4,19 +4,39 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs::File;
 use std::path::Path;
+use std::collections::{HashMap, BTreeSet};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 struct FragPipeRow {
-    #[serde(rename = "Spectrum")]
     spectrum: String,
-    #[serde(rename = "Peptide")]
     peptide: String,
-    #[serde(rename = "Charge")]
     charge: i32,
-    #[serde(rename = "Total Glycan Composition")]
     total_glycan_composition: Option<String>,
-    #[serde(rename = "Assigned Modifications")]
     assigned_modifications: Option<String>,
+    extra_columns: HashMap<String, String>,
+}
+
+/// Build a FragPipeRow from a CSV record map. Known columns are extracted; the rest go into extra_columns.
+fn row_from_record(mut record: HashMap<String, String>) -> Result<FragPipeRow> {
+    let spectrum = record.remove("Spectrum").unwrap_or_default();
+    let peptide = record.remove("Peptide").unwrap_or_default();
+    let charge = record
+        .remove("Charge")
+        .unwrap_or_default()
+        .parse::<i32>()
+        .unwrap_or(0);
+    let total_glycan_composition = record.remove("Total Glycan Composition").filter(|s| !s.is_empty());
+    let assigned_modifications = record.remove("Assigned Modifications").filter(|s| !s.is_empty());
+    // Whatever is left is "extra" columns
+    let extra_columns = record;
+    Ok(FragPipeRow {
+        spectrum,
+        peptide,
+        charge,
+        total_glycan_composition,
+        assigned_modifications,
+        extra_columns,
+    })
 }
 
 #[derive(Debug, Serialize)]
@@ -31,6 +51,8 @@ struct IdentificationRow {
     modification: String,
     #[serde(rename = "spectral_file")]
     spectrum_file: String,
+    #[serde(flatten)]
+    extra_columns: HashMap<String, String>,
 }
 
 #[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
@@ -220,8 +242,11 @@ pub fn convert_fragpipe_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<
     let mut identifications = Vec::new();
     let mut modifications_set = HashSet::new();
 
-    for result in reader.deserialize::<FragPipeRow>() {
-        let row = result?;
+    //for result in reader.deserialize::<FragPipeRow>() {
+    //    let row = result?;
+    for result in reader.deserialize::<HashMap<String, String>>() {
+        let row = row_from_record(result?)?;
+        //println!("{:#?}", row.extra_columns);
 
         // Extract scan number
         let scan = get_spec_nr(&row.spectrum)?;
@@ -242,6 +267,7 @@ pub fn convert_fragpipe_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<
             charge: row.charge,
             modification,
             spectrum_file: spectral_file,
+            extra_columns: row.extra_columns,
         });
 
         // Collect modifications for modifications.csv
@@ -257,11 +283,42 @@ pub fn convert_fragpipe_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<
     let identifications_path = output_dir.join("Identifications.csv");
     let mut wtr = csv::Writer::from_path(&identifications_path)?;
 
-    for row in identifications {
-        wtr.serialize(row)?;
+    // Collect all extra column names (sorted) so header and row order match
+    let extra_keys: Vec<String> = identifications
+        .iter()
+        .flat_map(|r| r.extra_columns.keys().cloned())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+
+    let header: Vec<String> = [
+        "Scan",
+        "Sequence",
+        "Charge",
+        "Modification",
+        "spectral_file",
+    ]
+    .into_iter()
+    .map(String::from)
+    .chain(extra_keys.clone())
+    .collect();
+    wtr.write_record(&header)?;
+
+    for row in &identifications {
+        let mut record = vec![
+            row.scan.to_string(),
+            row.sequence.clone(),
+            row.charge.to_string(),
+            row.modification.clone(),
+            row.spectrum_file.clone(),
+        ];
+        for k in &extra_keys {
+            record.push(row.extra_columns.get(k).cloned().unwrap_or_default());
+        }
+        wtr.write_record(&record)?;
     }
     wtr.flush()?;
-
+    
     // Write Modifications.csv
     let modifications_path = output_dir.join("Modifications.csv");
     let mut wtr = csv::Writer::from_path(&modifications_path)?;

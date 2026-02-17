@@ -65,6 +65,18 @@ pub mod cli;
 #[cfg(test)]
 mod lib_tests {
     use super::*;
+    use std::path::Path;
+    use crate::formats::fragpipe::convert_fragpipe_to_ipsa;
+    
+    #[test]
+    fn test_convert_fragpipe_to_ipsa() {
+        let input = Path::new("C:/IPSA_testfiles/FP/psm.tsv");
+        let output = Path::new("C:/IPSA_testfiles/FP/");
+
+        let result = convert_fragpipe_to_ipsa(input, output);
+
+        assert!(result.is_ok());
+    }
 
     #[test]
     fn test_software_format_display() {
@@ -83,4 +95,6 @@ mod lib_tests {
         assert!(config.validate_output);
         assert_eq!(config.buffer_size, 8192);
     }
+    
+        
 }
