@@ -8,6 +8,7 @@ pub enum SoftwareFormat {
     GPQuest,
     OPair,
     PGlyco,
+    hgi,
 }
 
 impl std::fmt::Display for SoftwareFormat {
@@ -19,6 +20,7 @@ impl std::fmt::Display for SoftwareFormat {
             SoftwareFormat::GPQuest => write!(f, "GPQuest"),
             SoftwareFormat::OPair => write!(f, "OPair"),
             SoftwareFormat::PGlyco => write!(f, "pGlyco"),
+            SoftwareFormat::hgi => write!(f, "hgi"),
         }
     }
 }
