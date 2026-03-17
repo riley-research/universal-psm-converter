@@ -44,8 +44,7 @@ pub fn convert_file_to_ipsa_with_config(
             PGlycoConverter::convert_to_ipsa(input, output_dir)?;
         },
         SoftwareFormat::hgi => {
-            use crate::formats::hgi::hgiConverter;
-            hgiConverter::convert_to_ipsa(input, output_dir)?;
+            crate::formats::hgi::convert_HGI_to_ipsa(input, output_dir)?;
         },
     }
 
