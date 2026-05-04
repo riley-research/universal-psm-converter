@@ -232,7 +232,7 @@ pub fn clean_mods(glycan_mod: Option<&str>, input_mod: Option<&str>) -> Vec<Modi
     results
 }
 
-pub fn convert_fragpipe_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<()> {
+pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
     // Read the TSV file
     let file = File::open(input_path)?;
     let mut reader = csv::ReaderBuilder::new()
@@ -333,4 +333,21 @@ pub fn convert_fragpipe_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<
     wtr.flush()?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod lib_tests {
+    use super::*;
+    use std::path::Path;
+    use crate::formats::fragpipe::convert_fragpipe_to_periscope;
+    
+    #[test]
+    fn test_convert_fragpipe_to_periscope() {
+        let input = Path::new("Z:\\Tim\\Periscope_test_files\\psm.tsv");
+        let output = Path::new("Z:\\Tim\\Periscope_test_files\\");
+
+        let result = convert_fragpipe_to_periscope(input, output);
+
+        assert!(result.is_ok());
+    }
 }

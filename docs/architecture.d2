@@ -73,7 +73,7 @@ crate: "universal-psm-converter" {
       class: [base; fn]
     }
     convert_file: {
-      label: convert_file_to_ipsa(input, output_dir)
+      label: convert_file_to_periscope(input, output_dir)
       class: [base; fn]
     }
     convert_stream: {
@@ -129,7 +129,7 @@ crate: "universal-psm-converter" {
   conversion: conversion {
     class: module
     convert_file_fn: {
-      label: convert_file_to_ipsa_with_config
+      label: convert_file_to_periscope_with_config
       class: [base; fn]
     }
     count_fn: {
@@ -151,14 +151,14 @@ crate: "universal-psm-converter" {
     fragpipe: FragPipe {
       class: parser
       f_convert: {
-        label: convert_fragpipe_to_ipsa
+        label: convert_fragpipe_to_periscope
         class: [base; fn]
       }
     }
     byonic: Byonic {
       class: parser
       b_convert: {
-        label: convert_to_ipsa
+        label: convert_to_periscope
         class: [base; fn]
       }
       inputs: {
@@ -169,7 +169,7 @@ crate: "universal-psm-converter" {
     glyco_decipher: Glyco-Decipher {
       class: parser
       g_convert: {
-        label: convert_to_ipsa
+        label: convert_to_periscope
         class: [base; fn]
       }
       inputs: {
@@ -180,7 +180,7 @@ crate: "universal-psm-converter" {
     gpquest: GPQuest {
       class: parser
       q_convert: {
-        label: convert_to_ipsa
+        label: convert_to_periscope
         class: [base; fn]
       }
       inputs: {
@@ -191,7 +191,7 @@ crate: "universal-psm-converter" {
     opair: OPair {
       class: parser
       o_convert: {
-        label: convert_to_ipsa
+        label: convert_to_periscope
         class: [base; fn]
       }
       inputs: {
@@ -202,7 +202,7 @@ crate: "universal-psm-converter" {
     pglyco: pGlyco {
       class: parser
       p_convert: {
-        label: convert_to_ipsa
+        label: convert_to_periscope
         class: [base; fn]
       }
       inputs: {

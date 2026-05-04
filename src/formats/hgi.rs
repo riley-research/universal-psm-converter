@@ -170,7 +170,7 @@ pub fn get_modification(modified_peptide: Option<&str>) -> Result<String>{
     
 }
 
-pub fn convert_HGI_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<()> {
+pub fn convert_HGI_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
     let file = File::open(input_path)?;
     let mut reader = csv::Reader::from_reader(file);
 

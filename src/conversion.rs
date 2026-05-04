@@ -6,12 +6,12 @@ use std::fs;
 use std::path::Path;
 use std::time::Instant;
 
-pub fn convert_file_to_ipsa(input: &Path, output_dir: &Path) -> Result<ConversionStats> {
+pub fn convert_file_to_periscope(input: &Path, output_dir: &Path) -> Result<ConversionStats> {
     let config = ConverterConfig::default();
-    convert_file_to_ipsa_with_config(input, output_dir, config)
+    convert_file_to_periscope_with_config(input, output_dir, config)
 }
 
-pub fn convert_file_to_ipsa_with_config(
+pub fn convert_file_to_periscope_with_config(
     input: &Path,
     output_dir: &Path,
     _config: ConverterConfig,
@@ -21,30 +21,30 @@ pub fn convert_file_to_ipsa_with_config(
 
     match format {
         SoftwareFormat::FragPipe => {
-            formats::fragpipe::convert_fragpipe_to_ipsa(input, output_dir)?;
+            formats::fragpipe::convert_fragpipe_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::Byonic => {
             use crate::formats::byonic::ByonicConverter;
-            ByonicConverter::convert_to_ipsa(input, output_dir)?;
+            ByonicConverter::convert_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::GlycoDecipher => {
             use crate::formats::glyco_decipher::GlycoDecipherConverter;
-            GlycoDecipherConverter::convert_to_ipsa(input, output_dir)?;
+            GlycoDecipherConverter::convert_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::GPQuest => {
             use crate::formats::gpquest::GPQuestConverter;
-            GPQuestConverter::convert_to_ipsa(input, output_dir)?;
+            GPQuestConverter::convert_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::OPair => {
             use crate::formats::opair::OPairConverter;
-            OPairConverter::convert_to_ipsa(input, output_dir)?;
+            OPairConverter::convert_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::PGlyco => {
             use crate::formats::pglyco::PGlycoConverter;
-            PGlycoConverter::convert_to_ipsa(input, output_dir)?;
+            PGlycoConverter::convert_to_periscope(input, output_dir)?;
         },
         SoftwareFormat::hgi => {
-            crate::formats::hgi::convert_HGI_to_ipsa(input, output_dir)?;
+            crate::formats::hgi::convert_HGI_to_periscope(input, output_dir)?;
         },
     }
 

@@ -13,7 +13,7 @@ pub use error::ConversionError;
 pub use types::{SoftwareFormat, ConversionStats, IdentificationRecord, ModificationRecord, PGlycoIdentificationRecord};
 pub use detection::detect_format;
 pub use streaming::{convert_streaming, StreamingConverter};
-pub use conversion::{convert_file_to_ipsa, convert_to_memory};
+pub use conversion::{convert_file_to_periscope, convert_to_memory};
 
 #[derive(Debug, Clone)]
 pub struct ConverterConfig {
@@ -50,12 +50,12 @@ pub fn convert_streaming_with_config<R: BufRead, W1: Write, W2: Write>(
     streaming::convert_streaming_with_config(reader, format, ident_writer, mods_writer, config)
 }
 
-pub fn convert_file_to_ipsa_with_config(
+pub fn convert_file_to_periscope_with_config(
     input: &Path,
     output_dir: &Path,
     config: ConverterConfig,
 ) -> Result<ConversionStats> {
-    conversion::convert_file_to_ipsa_with_config(input, output_dir, config)
+    conversion::convert_file_to_periscope_with_config(input, output_dir, config)
 }
 
 #[cfg(feature = "cli")]
@@ -66,14 +66,14 @@ pub mod cli;
 mod lib_tests {
     use super::*;
     use std::path::Path;
-    use crate::formats::fragpipe::convert_fragpipe_to_ipsa;
+    use crate::formats::fragpipe::convert_fragpipe_to_periscope;
     
     #[test]
-    fn test_convert_fragpipe_to_ipsa() {
-        let input = Path::new("C:/IPSA_testfiles/FP/psm.tsv");
-        let output = Path::new("C:/IPSA_testfiles/FP/");
+    fn test_convert_fragpipe_to_periscope() {
+        let input = Path::new("C:/PERISCOPE_testfiles/FP/psm.tsv");
+        let output = Path::new("C:/PERISCOPE_testfiles/FP/");
 
-        let result = convert_fragpipe_to_ipsa(input, output);
+        let result = convert_fragpipe_to_periscope(input, output);
 
         assert!(result.is_ok());
     }

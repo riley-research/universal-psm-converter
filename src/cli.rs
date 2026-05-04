@@ -1,6 +1,6 @@
 #[cfg(feature = "cli")]
 use clap::Parser;
-use crate::{convert_file_to_ipsa, detect_format_from_path};
+use crate::{convert_file_to_periscope, detect_format_from_path};
 use std::path::PathBuf;
 
 #[cfg(feature = "cli")]
@@ -27,7 +27,7 @@ pub fn run() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    let stats = convert_file_to_ipsa(&args.input, &args.output)?;
+    let stats = convert_file_to_periscope(&args.input, &args.output)?;
 
     println!("✅ Conversion complete:");
     println!("   Format: {}", stats.format);
