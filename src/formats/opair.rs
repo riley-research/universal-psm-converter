@@ -30,7 +30,7 @@ pub struct ModificationRow {
 pub struct OPairConverter;
 
 impl OPairConverter {
-    pub fn convert_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<()> {
+    pub fn convert_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
         let file = File::open(input_path)?;
         let mut reader = csv::ReaderBuilder::new()
             .delimiter(b'\t')
@@ -257,7 +257,7 @@ mod tests {
             let temp_dir = TempDir::new()?;
             let output_dir = temp_dir.path();
 
-            OPairConverter::convert_to_ipsa(input_path, output_dir)?;
+            OPairConverter::convert_to_periscope(input_path, output_dir)?;
 
             let our_identifications = fs::read_to_string(output_dir.join("Identifications.csv"))?;
 

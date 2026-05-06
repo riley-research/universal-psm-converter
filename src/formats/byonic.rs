@@ -41,7 +41,7 @@ struct ByonicRow {
 pub struct ByonicConverter;
 
 impl ByonicConverter {
-    pub fn convert_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<()> {
+    pub fn convert_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
         let extension = input_path.extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("")
@@ -433,7 +433,7 @@ mod tests {
         let temp_dir = TempDir::new()?;
         let output_dir = temp_dir.path();
 
-        ByonicConverter::convert_to_ipsa(input_path, output_dir)?;
+        ByonicConverter::convert_to_periscope(input_path, output_dir)?;
 
         let our_identifications = fs::read_to_string(output_dir.join("Identifications.csv"))?;
         let ref_identifications = fs::read_to_string(reference_dir.join("Identifications.csv"))?;

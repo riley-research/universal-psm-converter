@@ -30,7 +30,7 @@ pub struct ModificationRow {
 pub struct GlycoDecipherConverter;
 
 impl GlycoDecipherConverter {
-    pub fn convert_to_ipsa(input_path: &Path, output_dir: &Path) -> Result<()> {
+    pub fn convert_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
         let file = File::open(input_path)?;
         let mut reader = csv::ReaderBuilder::new()
             .delimiter(b'\t')
@@ -256,7 +256,7 @@ mod tests {
         let temp_dir = TempDir::new()?;
         let output_dir = temp_dir.path();
 
-        GlycoDecipherConverter::convert_to_ipsa(input_path, output_dir)?;
+        GlycoDecipherConverter::convert_to_periscope(input_path, output_dir)?;
 
         let our_identifications = fs::read_to_string(output_dir.join("Identifications.csv"))?;
         let ref_identifications = fs::read_to_string(reference_dir.join("Identifications.csv"))?;

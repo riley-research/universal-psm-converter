@@ -1,6 +1,6 @@
 # Universal PSM Converter
 
-Universal converter for glycoproteomics software outputs to IPSA format.
+Universal converter for glycoproteomics software outputs to PERISCOPE format.
 
 ## Supported Formats
 
@@ -16,14 +16,14 @@ Universal converter for glycoproteomics software outputs to IPSA format.
 ### As Library
 
 ```rust
-use universal_psm_converter::{convert_file_to_ipsa, detect_format_from_path};
+use universal_psm_converter::{convert_file_to_periscope, detect_format_from_path};
 
 // Detect format
 let format = detect_format_from_path(&input_path)?;
 println!("Detected: {}", format);
 
-// Convert to IPSA format
-let stats = convert_file_to_ipsa(&input_path, &output_dir)?;
+// Convert to PERISCOPE format
+let stats = convert_file_to_periscope(&input_path, &output_dir)?;
 println!("Converted {} identifications", stats.identifications_written);
 ```
 
@@ -35,7 +35,7 @@ cargo run --features cli -- --input sample.tsv --output ./results/
 
 ## Output Format
 
-All converters produce standardized IPSA CSV files:
+All converters produce standardized PERISCOPE CSV files:
 
 **Identifications.csv:**
 ```csv

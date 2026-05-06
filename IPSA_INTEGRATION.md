@@ -1,8 +1,8 @@
-# IPSA Integration Guide
+# PERISCOPE Integration Guide
 
 ## Add Dependency
 
-Add to IPSA's `src-tauri/Cargo.toml`:
+Add to PERISCOPE's `src-tauri/Cargo.toml`:
 
 ```toml
 [dependencies]
@@ -27,7 +27,7 @@ fn convert_universal_format(
     state: State<'_, AppState>,
     file_path: String,
 ) -> Result<UniversalConversionResult, String> {
-    use universal_psm_converter::{detect_format_from_path, convert_file_to_ipsa};
+    use universal_psm_converter::{detect_format_from_path, convert_file_to_periscope};
     use std::path::Path;
 
     let input_path = Path::new(&file_path);
@@ -35,7 +35,7 @@ fn convert_universal_format(
         .map_err(|e| format!("Unsupported format: {}", e))?;
 
     let temp_dir = tempfile::tempdir().map_err(|e| e.to_string())?;
-    let stats = convert_file_to_ipsa(input_path, temp_dir.path())
+    let stats = convert_file_to_periscope(input_path, temp_dir.path())
         .map_err(|e| format!("Conversion failed: {}", e))?;
 
     let identifications_path = temp_dir.path().join("Identifications.csv");

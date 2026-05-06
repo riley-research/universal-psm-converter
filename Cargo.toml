@@ -5,7 +5,7 @@ edition = "2021"
 description = "Universal converter for bottom-up glycoproteomics search software"
 license = "MIT"
 repository = "https://github.com/riley-research/universal-psm-converter"
-keywords = ["glycoproteomics", "proteomics", "mass", "spectrometry", "peptide", "spectral", "ipsa"]
+keywords = ["glycoproteomics", "proteomics", "mass", "spectrometry", "peptide", "spectral", "periscope"]
 categories = ["science"]
 
 [dependencies.once_cell]
