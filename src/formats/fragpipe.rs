@@ -373,6 +373,7 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
     let file = File::open(input_path)?;
     let mut reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
+        .flexible(true)
         .from_reader(file);
 
     let mut identifications = Vec::new();
@@ -380,11 +381,18 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
     let calc = GlycanMassCalculator::new();
     let name_converter = GlycanNameConverter::new();
 
-    //for result in reader.deserialize::<FragPipeRow>() {
-    //    let row = result?;
-    for result in reader.deserialize::<HashMap<String, String>>() {
-        let row = row_from_record(result?)?;
-        //println!("{:#?}", row.glycan_site_compositions);
+    let headers = reader.headers()?.clone();
+    
+    let mut record = csv::StringRecord::new();
+
+    //Don't directly deserialize to allow missing column values
+    while reader.read_record(&mut record)? {
+        let row_map: HashMap<String, String> = headers.iter()
+        .zip(record.iter())
+        .map(|(h, v): (&str, &str)| (h.to_string(), v.to_string()))
+        .collect();
+        
+        let row = row_from_record(row_map)?;
 
         let scan = get_spec_nr(&row.spectrum)?;
 
@@ -478,13 +486,21 @@ mod lib_tests {
     use std::path::Path;
     use crate::formats::fragpipe::convert_fragpipe_to_periscope;
     
-    #[test]
-    fn test_convert_fragpipe_to_periscope() {
-        let input = Path::new("Z:\\Tim\\Periscope_test_files\\psm.tsv");
-        let output = Path::new("Z:\\Tim\\Periscope_test_files\\");
+   #[test]
+fn test_convert_fragpipe_to_periscope() {
+    let input = Path::new(
+        r"Z:\Emmajay\R00010_iCSC\26-04-28-inSoln-R2P1\26-06-23-v24p1-NglycoHybrid-IS-extendedHyPhnDB\260428_ES_R00010_c00021_MG_SA_ctrl_IS_1N\psm.tsv"
+    );
 
-        let result = convert_fragpipe_to_periscope(input, output);
+    let output = Path::new(
+        r"Z:\Emmajay\R00010_iCSC\26-04-28-inSoln-R2P1\26-06-23-v24p1-NglycoHybrid-IS-extendedHyPhnDB\260428_ES_R00010_c00021_MG_SA_ctrl_IS_1N"
+    );
 
-        assert!(result.is_ok());
+    let result = convert_fragpipe_to_periscope(input, output);
+
+    match result {
+        Ok(_) => println!("Success"),
+        Err(e) => panic!("Conversion failed: {}", e),
     }
+}
 }

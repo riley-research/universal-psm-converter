@@ -70,8 +70,8 @@ mod lib_tests {
     
     #[test]
     fn test_convert_fragpipe_to_periscope() {
-        let input = Path::new("C:/PERISCOPE_testfiles/FP/psm.tsv");
-        let output = Path::new("C:/PERISCOPE_testfiles/FP/");
+        let input = Path::new(r"Z:\Emmajay\R00010_iCSC\26-04-28-inSoln-R2P1\26-06-23-v24p1-NglycoHybrid-IS-extendedHyPhnDB\260428_ES_R00010_c00021_MG_SA_ctrl_IS_1N\psm.tsv");
+        let output = Path::new(r"Z:\Emmajay\R00010_iCSC\26-04-28-inSoln-R2P1\26-06-23-v24p1-NglycoHybrid-IS-extendedHyPhnDB\260428_ES_R00010_c00021_MG_SA_ctrl_IS_1N\");
 
         let result = convert_fragpipe_to_periscope(input, output);
 
