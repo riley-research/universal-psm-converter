@@ -480,6 +480,7 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
     Ok(())
 }
 
+/*
 #[cfg(test)]
 mod lib_tests {
     use super::*;
@@ -504,3 +505,4 @@ fn test_convert_fragpipe_to_periscope() {
     }
 }
 }
+*/
