@@ -38,7 +38,7 @@ pub fn detect_format_from_reader<R: BufRead>(mut reader: R) -> Result<SoftwareFo
         return Ok(SoftwareFormat::GPQuest);
     }
 
-    if headers.contains("Data File") && headers.contains("Identified peptide base sequence") && headers.contains("Observed charge state (z)") {
+    if headers.contains("modification_for_identification") && headers.contains("modification_for_modification") {
         return Ok(SoftwareFormat::hgi);
     }
 
