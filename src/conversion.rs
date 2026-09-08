@@ -89,3 +89,22 @@ pub fn convert_to_memory(_input: &Path) -> Result<(Vec<IdentificationRecord>, Ve
 pub fn convert_to_pglyco_memory(_input: &Path) -> Result<(Vec<PGlycoIdentificationRecord>, Vec<ModificationRecord>)> {
     Ok((vec![], vec![]))
 }
+
+/*
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_convert_file_to_periscope() {
+        let input = std::path::Path::new(r"C:\Users\tim_v\Documents\PostDoc\HGI\ModuleA_GlycoPSMs_Sample_1.tsv");
+        let output = std::path::Path::new(r#"C:\Users\tim_v\Documents\PostDoc\HGI\"#);
+
+        let result = convert_file_to_periscope(input, output);
+
+        assert!(result.is_ok(), "Conversion failed: {:?}", result.err());
+    }
+}
+
+// cargo test conversion::tests::test_convert_file_to_periscope -- --no-capture
+*/
