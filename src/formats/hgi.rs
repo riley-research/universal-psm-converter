@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::fs::File; 
 use std::path::Path;
 use std::collections::{HashMap, BTreeSet};
-use regex::Regex;
+use super::output_rows::{IdentificationRow, ModificationRow};
 
 #[derive(Debug)]
 struct HGIRow {
@@ -13,30 +13,6 @@ struct HGIRow {
     modification_for_identification: Option<String>,
     modification_for_modification: Option<String>,
     file: String,
-    extra_columns: HashMap<String, String>,
-}
-
-#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
-pub struct ModificationRow {
-    #[serde(rename = "Modification Name")]
-    modification_name: String,
-    #[serde(rename = "Modification Mass")]
-    modification_mass: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct IdentificationRow {
-    #[serde(rename = "Scan")]
-    pub scan: String,
-    #[serde(rename = "Sequence")]
-    pub sequence: String,
-    #[serde(rename = "Charge")]
-    pub charge: i32,
-    #[serde(rename = "Modification")]
-    pub modification : String,
-    #[serde(rename = "spectral_file")]
-    spectrum_file: String,
-    #[serde(flatten)]
     extra_columns: HashMap<String, String>,
 }
 
@@ -149,8 +125,8 @@ pub fn convert_HGI_to_periscope(input_path: &Path, output_dir: &Path) -> Result<
             sequence: sequence,
             charge: charge,
             modification: modification.unwrap(),
-            spectrum_file: spectrum_file,
-            extra_columns: extra_columns,
+            spectral_file: spectrum_file,
+            extra_columns: Option::from(extra_columns),
         });
 
     }
@@ -180,7 +156,7 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
     // Collect all extra column names (sorted) so header and row order match
     let extra_keys: Vec<String> = identifications
         .iter()
-        .flat_map(|r| r.extra_columns.keys().cloned())
+        .flat_map(|r| r.extra_columns.as_ref().unwrap().keys().cloned())
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect();
@@ -204,10 +180,10 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
             row.sequence.clone(),
             row.charge.to_string(),
             row.modification.clone(),
-            row.spectrum_file.clone(),
+            row.spectral_file.clone(),
         ];
         for k in &extra_keys {
-            record.push(row.extra_columns.get(k).cloned().unwrap_or_default());
+            record.push(row.extra_columns.as_ref().unwrap().get(k).cloned().unwrap_or_default());
         }
         wtr.write_record(&record)?;
     }

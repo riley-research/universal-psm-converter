@@ -1,32 +1,11 @@
 use anyhow::{anyhow, Result};
 use calamine::{open_workbook, Reader, Xlsx};
 use regex::Regex;
-use serde::Serialize;
 use std::collections::HashSet;
 use std::fs::File;
 use std::path::Path;
+use super::output_rows::{IdentificationRow, ModificationRow};
 
-#[derive(Debug, Serialize)]
-pub struct IdentificationRow {
-    #[serde(rename = "Scan")]
-    pub scan: String,
-    #[serde(rename = "Sequence")]
-    pub sequence: String,
-    #[serde(rename = "Charge")]
-    pub charge: i32,
-    #[serde(rename = "Modification")]
-    pub modification: String,
-    #[serde(rename = "spectral_file")]
-    pub spectral_file: String,
-}
-
-#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
-pub struct ModificationRow {
-    #[serde(rename = "Modification Name")]
-    pub modification_name: String,
-    #[serde(rename = "Modification Mass")]
-    pub modification_mass: String,
-}
 
 #[derive(Debug)]
 struct ByonicRow {
@@ -75,6 +54,7 @@ impl ByonicConverter {
                 charge: row.charge,
                 modification: modification.unwrap_or_default(),
                 spectral_file,
+                extra_columns: None,
             });
 
             if let Some(clean_mods) = Self::clean_mods(&row.glycan, &cleaned_sequence, &row.modifications)? {
