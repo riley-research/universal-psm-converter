@@ -46,6 +46,9 @@ pub fn convert_file_to_periscope_with_config(
         SoftwareFormat::hgi => {
             crate::formats::hgi::convert_HGI_to_periscope(input, output_dir)?;
         },
+        SoftwareFormat::RTLS => {
+            crate::formats::rtls::convert_RTLS_to_periscope(input, output_dir)?;
+        },
     }
 
     let processing_time = start_time.elapsed();

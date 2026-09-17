@@ -21,6 +21,7 @@ impl std::fmt::Display for SoftwareFormat {
             SoftwareFormat::OPair => write!(f, "OPair"),
             SoftwareFormat::PGlyco => write!(f, "pGlyco"),
             SoftwareFormat::hgi => write!(f, "hgi"),
+            SoftwareFormat::RTLS => write!(f, "RTLS"),
         }
     }
 }
