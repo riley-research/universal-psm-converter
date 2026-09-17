@@ -6,4 +6,3 @@ pub mod hgi;
 pub mod opair;
 pub mod pglyco;
 pub mod rtls;
-pub mod output_rows;

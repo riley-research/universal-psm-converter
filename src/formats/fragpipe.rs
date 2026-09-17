@@ -1,11 +1,11 @@
 // Copy the FragPipe implementation from the previous working converter
 use anyhow::{anyhow, Result};
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs::File;
 use std::path::Path;
 use std::collections::{HashMap, BTreeSet};
 use regex::Regex;
-use super::output_rows::{IdentificationRow, ModificationRow};
 
 #[derive(Debug)]
 enum ColumnState {
@@ -23,6 +23,30 @@ struct FragPipeRow {
     assigned_modifications: Option<String>,
     glycan_site_compositions: ColumnState,
     extra_columns: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize)]
+struct IdentificationRow {
+    #[serde(rename = "Scan")]
+    scan: i32,
+    #[serde(rename = "Sequence")]
+    sequence: String,
+    #[serde(rename = "Charge")]
+    charge: i32,
+    #[serde(rename = "Modification")]
+    modification: String,
+    #[serde(rename = "spectral_file")]
+    spectrum_file: String,
+    #[serde(flatten)]
+    extra_columns: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Clone, PartialEq, Eq, Hash)]
+pub struct ModificationRow {
+    #[serde(rename = "Modification Name")]
+    modification_name: String,
+    #[serde(rename = "Modification Mass")]
+    modification_mass: String,
 }
 
 pub struct GlycanMassCalculator {
@@ -382,12 +406,12 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
 
         // Create identification row
         identifications.push(IdentificationRow {
-            scan: scan.to_string(),
+            scan,
             sequence: row.peptide.clone(),
             charge: row.charge,
             modification,
-            spectral_file: spectral_file,
-            extra_columns: Option::from(row.extra_columns),
+            spectrum_file: spectral_file,
+            extra_columns: row.extra_columns,
         });
 
         // Collect modifications for modifications.csv
@@ -407,7 +431,7 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
     // Collect all extra column names (sorted) so header and row order match
     let extra_keys: Vec<String> = identifications
         .iter()
-        .flat_map(|r| r.extra_columns.as_ref().unwrap().keys().cloned())
+        .flat_map(|r| r.extra_columns.keys().cloned())
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect();
@@ -431,10 +455,10 @@ pub fn convert_fragpipe_to_periscope(input_path: &Path, output_dir: &Path) -> Re
             row.sequence.clone(),
             row.charge.to_string(),
             row.modification.clone(),
-            row.spectral_file.clone(),
+            row.spectrum_file.clone(),
         ];
         for k in &extra_keys {
-            record.push(row.extra_columns.as_ref().unwrap().get(k).cloned().unwrap_or_default());
+            record.push(row.extra_columns.get(k).cloned().unwrap_or_default());
         }
         wtr.write_record(&record)?;
     }
