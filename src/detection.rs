@@ -42,6 +42,10 @@ pub fn detect_format_from_reader<R: BufRead>(mut reader: R) -> Result<SoftwareFo
         return Ok(SoftwareFormat::hgi);
     }
 
+    if headers.contains("Mods") && headers.contains("MZDiff(exp-lib)") {
+        return Ok(SoftwareFormat::RTLS);
+    }
+
     Err(ConversionError::UnsupportedFormat.into())
 }
 
