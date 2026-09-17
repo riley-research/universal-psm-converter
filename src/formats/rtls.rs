@@ -1,7 +1,6 @@
 use std::{collections::{HashMap, BTreeSet}, path::Path, fs::File};
 use anyhow::{Context, Result};
-use super::output_rows::{IdentificationRow, ModificationRow};
-
+use serde::{Serialize};
 
 #[derive(Debug)]
 struct RTLSRow {
@@ -14,6 +13,27 @@ struct RTLSRow {
     capital_y_ions: Option<String>,
     file_name: String,
     extra_columns: HashMap<String, String>,
+}
+#[derive(Debug, Serialize, PartialEq)]
+pub struct ModificationRow {
+    #[serde(rename = "Modification Name")]
+    modification_name: String,
+    #[serde(rename = "Modification Mass")]
+    modification_mass: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct IdentificationRow {
+    #[serde(rename = "Scan")]
+    pub scan: String,
+    #[serde(rename = "Sequence")]
+    pub sequence: String,
+    #[serde(rename = "Charge")]
+    pub charge: i32,
+    #[serde(rename = "Modification")]
+    pub modification : String,
+    #[serde(rename = "spectral_file")]
+    spectral_file: String,
 }
 
 pub fn convert_RTLS_to_periscope(input_path: &Path, output_dir: &Path) -> Result<()> {
@@ -50,7 +70,6 @@ pub fn convert_RTLS_to_periscope(input_path: &Path, output_dir: &Path) -> Result
             charge: charge,
             modification: modification,
             spectral_file: spectrum_file,
-            extra_columns: Option::from(extra_columns),
         });
 
     }
@@ -174,14 +193,6 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
     let identifications_path = od.join("Identifications.csv");
     let mut wtr = csv::Writer::from_path(&identifications_path)?;
 
-    // Collect all extra column names (sorted) so header and row order match
-    let extra_keys: Vec<String> = identifications
-        .iter()
-        .flat_map(|r| r.extra_columns.as_ref().unwrap().keys().cloned())
-        .collect::<BTreeSet<_>>()
-        .into_iter()
-        .collect();
-
     let header: Vec<String> = [
         "Scan",
         "Sequence",
@@ -191,7 +202,6 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
     ]
     .into_iter()
     .map(String::from)
-    .chain(extra_keys.clone())
     .collect();
     wtr.write_record(&header)?;
 
@@ -206,9 +216,6 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
             row.modification.clone(),
             row.spectral_file.clone(),
         ];
-        for k in &extra_keys {
-            record.push(row.extra_columns.as_ref().unwrap().get(k).cloned().unwrap_or_default());
-        }
         wtr.write_record(&record)?;
     }
     wtr.flush()?;
