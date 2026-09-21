@@ -9,6 +9,7 @@ pub enum SoftwareFormat {
     OPair,
     PGlyco,
     hgi,
+    RTLS,
 }
 
 impl std::fmt::Display for SoftwareFormat {
