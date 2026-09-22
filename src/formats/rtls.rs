@@ -45,7 +45,13 @@ pub fn convert_RTLS_to_periscope(input_path: &Path, output_dir: &Path) -> Result
     let mut modifications = Vec::new();
 
     for result in reader.deserialize::<HashMap<String, String>>() {
-        let row = row_from_record(result?)?;
+        let record = result?;
+        let row = match row_from_record(record) {
+            Ok(r) => r,
+            Err(e) => {
+                continue; //some rows will not be populated since RTLS outputs rows for non-ided things
+            }
+        };
 
         //Get the modifications ready
         let mods = clean_mods(row.mods.as_deref());
@@ -178,10 +184,11 @@ fn clean_mods(value: Option<&str>) -> Vec<ModificationRow> {
 }
 
 fn write_modification(od: &Path, mods: Vec<ModificationRow>) -> Result<()> {
-
     let modifications_path = od.join("Modifications.csv");
-
-    let mut wtr = csv::Writer::from_path(&modifications_path)?;
+    let mut wtr = csv::WriterBuilder::new()
+        .has_headers(false)
+        .from_path(&modifications_path)?;
+    wtr.write_record(&["Modification Name", "Modification Mass"])?;
     for row in mods {
         wtr.serialize(row)?;
     }
