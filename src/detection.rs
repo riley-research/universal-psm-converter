@@ -42,10 +42,6 @@ pub fn detect_format_from_reader<R: BufRead>(mut reader: R) -> Result<SoftwareFo
         return Ok(SoftwareFormat::hgi);
     }
 
-    if headers.contains("Mods") && headers.contains("MZDiff(exp-lib)") {
-        return Ok(SoftwareFormat::RTLS);
-    }
-
     Err(ConversionError::UnsupportedFormat.into())
 }
 
@@ -79,6 +75,10 @@ pub fn detect_format(path: &Path) -> Result<SoftwareFormat> {
 
             if let Ok(headers) = reader.headers() {
                 let header_str = headers.iter().collect::<Vec<_>>().join(",").to_lowercase();
+
+                if header_str.contains("mzdiff(exp-lib)") && header_str.contains("mods") {
+                    return Ok(SoftwareFormat::RTLS);
+                }
 
                 if header_str.contains("scan..") && header_str.contains("peptide...proteinmetrics") {
                     return Ok(SoftwareFormat::Byonic);
