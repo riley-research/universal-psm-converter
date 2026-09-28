@@ -72,7 +72,7 @@ pub fn get_filename(raw_filename: &str) -> Result<String> {
         Ok(String::from("241231_KEM_HGI_ModuleB1_EThcD.raw"))
     } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_2_v2_mod") {
         Ok(String::from("241231_KEM_HGI_ModuleB2_EThcD.raw"))
-    } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_1_v3_mod") {
+    } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_3_v2_mod") {
         Ok(String::from("241231_KEM_HGI_ModuleB3_EThcD.raw"))
 
     } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_1_HCD_v2_mod") {
