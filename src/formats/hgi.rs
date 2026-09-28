@@ -68,24 +68,31 @@ pub fn get_filename(raw_filename: &str) -> Result<String> {
     } else if raw_filename.contains("ModuleA_GlycoPSMs_Sample_3") {
         Ok(String::from("241202_KEM_HGI_ModuleA3.raw"))
     
-    } else if raw_filename.contains("ModuleB1") {
+    } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_1_v2_mod") {
         Ok(String::from("241231_KEM_HGI_ModuleB1_EThcD.raw"))
-    } else if raw_filename.contains("ModuleB2") {
+    } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_2_v2_mod") {
         Ok(String::from("241231_KEM_HGI_ModuleB2_EThcD.raw"))
-    } else if raw_filename.contains("ModuleB3") {
+    } else if raw_filename.contains("ModuleB_GlycoPSMs_Sample_1_v3_mod") {
         Ok(String::from("241231_KEM_HGI_ModuleB3_EThcD.raw"))
+
+    } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_1_HCD_v2_mod") {
+        Ok(String::from("250324_VC_HGI_ModuleC_1_EThcD.raw"))
+    } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_2_HCD_v2_mod") {
+        Ok(String::from("250324_VC_HGI_ModuleC_1_EThcD.raw"))
+    } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_3_HCD_v2_mod") {
+        Ok(String::from("250324_VC_HGI_ModuleC_1_EThcD.raw"))
     
-    } else if raw_filename.contains("ModuleC1_EThcD") {
+    } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_1_EThcD_v2_mod") {
         Ok(String::from("250324_VC_HGI_ModuleC_1_EThcD.raw"))
     } else if raw_filename.contains("ModuleC1_HCD") {
         Ok(String::from("250324_VC_HGI_ModuleC_1_HCD.raw"))
     
-    } else if raw_filename.contains("ModuleC2_EThcD") {
+    } else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_2_EThcD_v2_mod") {
         Ok(String::from("250324_VC_HGI_ModuleC_2_EThcD.raw"))
     } else if raw_filename.contains("ModuleC2_HCD") {
         Ok(String::from("250324_VC_HGI_ModuleC_2_HCD.raw"))
    
-    }else if raw_filename.contains("ModuleC3_EThcD") {
+    }else if raw_filename.contains("ModuleC_GlycoPSMs_Sample_3_EThcD_v2_mod") {
         Ok(String::from("250324_VC_HGI_ModuleC_3_EThcD.raw"))
     } else if raw_filename.contains("ModuleC4_HCD") {
         Ok(String::from("250324_VC_HGI_ModuleC_3_HCD.raw"))
@@ -216,7 +223,7 @@ fn write_identifications(od: &Path, identifications: Vec<IdentificationRow>) -> 
     Ok(())
 }
 
-/*
+
 #[cfg(test)]
 mod lib_tests {
     use super::*;
@@ -226,11 +233,11 @@ mod lib_tests {
    #[test]
 fn test_convert_hgi_to_periscope() {
     let input = Path::new(
-        r"C:\Users\tim_v\Documents\PostDoc\HGI\ModuleA_GlycoPSMs_Sample_1.csv"
+        r"W:\R00021_HGIstudy2\Summarized_results\Periscope\ModuleC_GlycoPSMs_Sample_3_EThcD_mod_v2.tsv"
     );
 
     let output = Path::new(
-        r"C:\Users\tim_v\Documents\PostDoc\HGI\"
+        r"W:\R00021_HGIstudy2\Summarized_results\Periscope\"
     );
 
     let result = convert_HGI_to_periscope(input, output);
@@ -243,4 +250,3 @@ fn test_convert_hgi_to_periscope() {
 } 
 
 //cargo test formats::hgi::lib_tests::test_convert_hgi_to_periscope -- --nocapture
-*/
